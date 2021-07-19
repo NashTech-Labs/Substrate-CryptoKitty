@@ -41,7 +41,9 @@ pub enum KittyGender {
 impl Kitty {
 
 	///gender() tells whether the kitty is male or female
+	/// parameter:
 	/// 
+	/// self, refers to the kittywith which gender function is called
 	/// return:
 	/// 
 	/// male is modulo is 0
@@ -124,6 +126,11 @@ decl_module! {
 		fn deposit_event() = default;
 
 		/// Create a new kitty
+		/// parameter: 
+		/// origin, from where the kitty is supposed to be created
+		/// 
+		/// return:
+		/// sender of the kitty, generate kitty id
 		#[weight = T::WeightInfo::create()]
 		pub fn create(origin) {
 			let sender = ensure_signed(origin)?;
@@ -138,6 +145,11 @@ decl_module! {
 		}
 
 		/// Breed kitties
+		/// parameters:
+		/// 
+		/// origin, from where kitty was originated
+		/// kitty_id_1: id of 1st kitty
+		/// kitty_id_2: id od 2nd kitty
 		#[weight = T::WeightInfo::breed()]
 		pub fn breed(origin, kitty_id_1: KittyIndexOf<T>, kitty_id_2: KittyIndexOf<T>) {
 			let sender = ensure_signed(origin)?;
@@ -149,6 +161,11 @@ decl_module! {
 		}
 
 		/// Transfer a kitty to new owner
+		/// parameters:
+		/// 
+		/// origin, from where kitty was originated
+		/// to: to which we are transferring
+		/// kitty_id: kitty id which we want to transfer
 		#[weight = T::WeightInfo::transfer()]
 		pub fn transfer(origin, to: T::AccountId, kitty_id: KittyIndexOf<T>) {
 			let sender = ensure_signed(origin)?;
@@ -164,6 +181,11 @@ decl_module! {
 
 		/// Set a price for a kitty for sale
 		/// None to delist the kitty
+		/// parameter:
+		/// 
+		/// origin, from where kitty was originated
+		/// kitty_id, set price of that kitty
+		/// new_price, what price we need to set
 		#[weight = T::WeightInfo::set_price()]
 		pub fn set_price(origin, kitty_id: KittyIndexOf<T>, new_price: Option<BalanceOf<T>>) {
 			let sender = ensure_signed(origin)?;
@@ -176,6 +198,11 @@ decl_module! {
 		}
 
 		/// Buy a kitty
+		/// parameters:
+		/// origin, from where kitty was originated
+		/// owner, owner of the kitty
+		/// kitty_id, which kitty you want to buy
+		/// max_price, maximun price of the kitty
 		#[weight = T::WeightInfo::buy()]
 		pub fn buy(origin, owner: T::AccountId, kitty_id: KittyIndexOf<T>, max_price: BalanceOf<T>) {
 			let sender = ensure_signed(origin)?;
@@ -197,12 +224,14 @@ decl_module! {
 				})
 			})?;
 		}
-///
-/// 
-/// 
-/// 
-/// 
-/// 
+	/// auto_breed
+	/// parameters:
+	/// origin, from where kitty was originated
+	/// kitty_id_1, kitty 1 id which will breed
+	/// kitty_id_2 , kitty which will breed with kitty 1
+	/// _nonce, nonce of the kitty 
+	/// 
+	/// call do_breed function
 		#[weight = 1000]
 		pub fn auto_breed(origin, kitty_id_1: KittyIndexOf<T>, kitty_id_2: KittyIndexOf<T>, _nonce: u32, _solution: u128) {
 			ensure_none(origin)?;
@@ -242,7 +271,12 @@ impl<T: Config> Module<T> {
 		);
 		payload.using_encoded(blake2_128)
 	}
-
+	//do_breed
+	//parameter:
+	//owner, is the owner of the kitty
+	//kitty1 , kitty 1 which will breed
+	// kitty 2 , whivh will breed with kitty 1
+	
 	fn do_breed(
 		owner: T::AccountId,
 		kitty1: Kitty,
